@@ -1,7 +1,7 @@
 require_dependency 'topic_view_item'
 
 module ExtendedDownloadControllerExtension
-  
+
   def export_entity
     guardian.ensure_can_export_entity!(export_params[:entity])
 
@@ -9,7 +9,7 @@ module ExtendedDownloadControllerExtension
         export_params[:entity] == 'admin_user_archive' ||
         export_params[:entity] == 'user_archive'
       )
-      
+
       Jobs.enqueue(:export_csv_file,
         entity: export_params[:entity],
         user_id: current_user.id,
@@ -19,7 +19,7 @@ module ExtendedDownloadControllerExtension
       super
     end
   end
-  
+
   private def export_params
     if admin_user_archive
       @_export_params ||= begin
@@ -38,7 +38,7 @@ end
 
 
 module ExtendedDownloadGuardianExtension
-  def can_export_entity?(entity)
+  def can_export_entity?(entity, entity_id = nil)
     if entity == "user_archive" || entity == 'admin_user_archive'
       return false unless @user
 
@@ -327,7 +327,7 @@ module ExtendedDownloadExportExtension
     block.call HISTORY
     user_history.each { |l| block.call l }
   end
-  
+
   def piped_category_name(category_id)
     return "-" unless category_id
     category = Category.find_by(id: category_id)
@@ -338,7 +338,7 @@ module ExtendedDownloadExportExtension
     end
     categories.reverse.join("|")
   end
-  
+
   def user_posts_archive(user_post)
     user_post_array = []
     topic_data = user_post.topic
